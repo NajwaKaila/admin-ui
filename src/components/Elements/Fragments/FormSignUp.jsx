@@ -1,6 +1,7 @@
 import React from "react";
 import LabeledInput from "../LabeledInput";
 import Button from "../Button";
+import { Link } from "react-router-dom";
 
 function FormSignUp() {
   return (
@@ -90,7 +91,6 @@ function FormSignUp() {
                 d="M43.6 20.5H42V20H24v8h11.3c-1.1 3.1-3.3 5.5-6.2 7.1l6.2 5.2C39 36.7 44 31 44 24c0-1.3-.1-2.4-.4-3.5z"
               />
             </svg>
-
             Continue with Google
           </span>
         </Button>
@@ -98,9 +98,9 @@ function FormSignUp() {
         {/* Footer */}
         <p className="text-center text-[11px] text-gray-400 mt-7">
           Already have an account?
-          <span className="text-[#25B4A4] cursor-pointer">
-            {" "}Sign in here
-          </span>
+          <Link to="/login" className="text-primary font-bold">
+          Sign In Here 
+          </Link>
         </p>
       </form>
     </>
