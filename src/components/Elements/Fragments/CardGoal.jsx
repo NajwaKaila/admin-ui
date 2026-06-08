@@ -47,7 +47,7 @@ function CardGoal(props) {
 	              </div>
 	            </div>
 	            <div className="ms-4 text-center">
-	              <CompositionExample data="{chartValue}" />
+	              <CompositionExample data={chartValue} />
 	              <div className="flex justify-between">
 	                <span className="text-gray-03">$0</span>
 	                <span className="font-bold text-2xl">12K</span>
