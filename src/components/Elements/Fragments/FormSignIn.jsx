@@ -3,60 +3,98 @@ import LabeledInput from "../LabeledInput";
 import CheckBox from "../CheckBox";
 import Button from "../Button";
 import { Link } from "react-router-dom";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+
+const SignInSchema = Yup.object().shape({
+  email: Yup.string().email("Email tidak valid").required("Email wajib diisi"),
+  password: Yup.string().required("Password wajib diisi"),
+});
 
 function FormSignIn({ onSubmit }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    console.log("Email:", email);
-    console.log("Password:", password);
-
-    onSubmit(email, password);
-  };
 
   return (
     <>
       {/* Form Start */}
       <div className="mt-16">
-        <form onSubmit={handleSubmit}>
-          <div className="mb-6">
-            <LabeledInput
-              label="Email Address"
-              id="email"
-              type="email"
-              placeholder="hello@example.com"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+        <Formik
+          initialValues={{
+            email: "",
+            password: "",
+            status: false,
+          }}
+          validationSchema={SignInSchema}
+          onSubmit={async (values, { setSubmitting }) => {
+            try {
+              await onSubmit(values.email, values.password);
+            } finally {
+              setSubmitting(false);
+            }
+          }}
+        >
+        	{({ isSubmitting }) => (
+            <Form>
+							{/* EMAIL */}
+              <div className="mb-6">
+                <Field name="email">
+                  {({ field }) => (
+                    <LabeledInput
+                      {...field}
+                      id="email"
+                      type="email"
+                      label="Email Address"
+                      placeholder="hello@example.com"
+                    />
+                  )}
+                </Field>
+                <ErrorMessage
+                  name="email"
+                  component="p"
+                  className="text-red-500 text-xs mt-1"
+                />  
+              </div>
 
-          <div className="mb-6">
-            <LabeledInput
-              label="Password"
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+              {/* PASSWORD */}
+              <div className="mb-6">
+                <Field name="password">
+                  {({ field }) => (
+                    <LabeledInput
+                      {...field}
+                      id="password"
+                      type="password"
+                      label="Password"
+                      placeholder="●●●●●●●●●●●●●●"
+                    />
+                  )}
+                </Field>
+                <ErrorMessage
+                  name="password"
+                  component="p"
+                  className="text-red-500 text-xs mt-1"
+                />                 
+              </div>
 
-          <div className="mb-3">
-            <CheckBox
-              label="Keep me signed in"
-              id="status"
-              type="checkbox"
-              name="status"
-            />
-          </div>
-
-          <Button type="submit">Login</Button>
-        </form>
+              {/* CHECKBOX */}
+              <div className="mb-3">
+                <Field name="status">
+                  {({ field }) => (
+                    <CheckBox
+                      {...field}
+                      id="status"
+                      type="checkbox"
+                      checked={field.value}
+                      label="Keep me signed in"
+                    />
+                  )}
+                </Field>
+              </div>
+              {/* BUTTON */}
+              <Button>{isSubmitting ? "Loading..." : "Login"}</Button> 
+            </Form>
+          )}
+        </Formik>
+        
       </div>
       {/* Form End */}
 
@@ -75,8 +113,22 @@ function FormSignIn({ onSubmit }) {
             <svg
               className="h-6 w-6 mr-2"
               xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+              width="800px"
+              height="800px"
               viewBox="-0.5 0 48 48"
+              version="1.1"
             >
+              <title>Google-color</title> <desc>Created with Scetch.</desc>
+              <defs> </defs>
+              <g
+                id="Icons"
+                stroke="none"
+                strokeWidth="1"
+                fill="none"
+                fillRule="evenodd"
+              >
+              </g>
               <path
                 fill="#FBBC05"
                 d="M9.82727273,24 C9.82727273,22.4757333 10.0804318,21.0144 10.5322727,19.6437333 L2.62345455,13.6042667 C1.08206818,16.7338667 0.213636364,20.2602667 0.213636364,24 C0.213636364,27.7365333 1.081,31.2608 2.62025,34.3882667 L10.5247955,28.3370667 C10.0772273,26.9728 9.82727273,25.5168 9.82727273,24"
