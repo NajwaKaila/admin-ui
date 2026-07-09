@@ -1,108 +1,193 @@
-import React from "react";
+import React, { useState } from "react";
 import LabeledInput from "../LabeledInput";
 import Button from "../Button";
 import { Link } from "react-router-dom";
 
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
+import AppSnackbar from "../AppSnackbar";
+import { registerService } from "../../../services/authService";
+
 function FormSignUp() {
+
+  const [loading, setLoading] = useState(false);
+
+const [snackbar, setSnackbar] = useState({
+  open: false,
+  message: "",
+  severity: "success",
+});
+
+const formik = useFormik({
+  initialValues: {
+    name: "",
+    email: "",
+    password: "",
+  },
+
+  validationSchema: Yup.object({
+    name: Yup.string().required("Nama wajib diisi"),
+    email: Yup.string()
+      .email("Email tidak valid")
+      .required("Email wajib diisi"),
+    password: Yup.string()
+      .min(6, "Minimal 6 karakter")
+      .required("Password wajib diisi"),
+  }),
+
+  onSubmit: async (values) => {
+    setLoading(true);
+
+    try {
+      const result = await registerService(
+        values.name,
+        values.email,
+        values.password
+      );
+
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: result.msg,
+      });
+
+      formik.resetForm();
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: err.msg,
+      });
+    }
+
+    setLoading(false);
+  },
+});
+
   return (
     <>
       <h2 className="text-center text-[20px] font-semibold mb-8">
         Create an account
       </h2>
 
-      <form>
-        {/* Name */}
-        <div className="mb-5">
-          <LabeledInput
-            label="Name"
-            id="name"
-            type="text"
-            placeholder="Tanzir Rahman"
-          />
-        </div>
+      <form onSubmit={formik.handleSubmit}>
 
-        {/* Email */}
-        <div className="mb-5">
-          <LabeledInput
-            label="Email Address"
-            id="email"
-            type="email"
-            placeholder="hello@example.com"
-          />
-        </div>
+  {/* Name */}
+  <div className="mb-5">
+    <LabeledInput
+      label="Name"
+      id="name"
+      name="name"
+      type="text"
+      placeholder="Tanzir Rahman"
+      value={formik.values.name}
+      onChange={formik.handleChange}
+      onBlur={formik.handleBlur}
+      error={formik.touched.name && formik.errors.name}
+    />
 
-        {/* Password */}
-        <div className="mb-5">
-          <LabeledInput
-            label="Password"
-            id="password"
-            type="password"
-            placeholder=".............."
-          />
-        </div>
+    {formik.touched.name && formik.errors.name && (
+      <p className="mt-1 text-xs text-red-500">
+        {formik.errors.name}
+      </p>
+    )}
+  </div>
 
-        {/* Terms */}
-        <p className="text-[11px] text-gray-400 mb-5 leading-5">
-          By continuing, you agree to our
-          <span className="text-[#25B4A4] cursor-pointer">
-            {" "}terms of service.
-          </span>
-        </p>
+  {/* Email */}
+  <div className="mb-5">
+    <LabeledInput
+      label="Email Address"
+      id="email"
+      name="email"
+      type="email"
+      placeholder="hello@example.com"
+      value={formik.values.email}
+      onChange={formik.handleChange}
+      onBlur={formik.handleBlur}
+      error={formik.touched.email && formik.errors.email}
+    />
 
-        {/* Sign Up Button */}
-        <Button type="submit">
-          Sign Up
-        </Button>
+    {formik.touched.email && formik.errors.email && (
+      <p className="mt-1 text-xs text-red-500">
+        {formik.errors.email}
+      </p>
+    )}
+  </div>
 
-        {/* Divider */}
-        <div className="flex items-center my-6">
-          <div className="flex-1 h-[1px] bg-gray-200"></div>
+  {/* Password */}
+  <div className="mb-5">
+    <LabeledInput
+      label="Password"
+      id="password"
+      name="password"
+      type="password"
+      placeholder=".............."
+      value={formik.values.password}
+      onChange={formik.handleChange}
+      onBlur={formik.handleBlur}
+      error={formik.touched.password && formik.errors.password}
+    />
 
-          <span className="px-3 text-[11px] text-gray-400">
-            or sign up with
-          </span>
+    {formik.touched.password && formik.errors.password && (
+      <p className="mt-1 text-xs text-red-500">
+        {formik.errors.password}
+      </p>
+    )}
+  </div>
 
-          <div className="flex-1 h-[1px] bg-gray-200"></div>
-        </div>
+  {/* Terms */}
+  <p className="text-[11px] text-gray-400 mb-5 leading-5">
+    By continuing, you agree to our
+    <span className="text-[#25B4A4] cursor-pointer">
+      {" "}terms of service.
+    </span>
+  </p>
 
-        {/* Google Button */}
-        <Button type="button" variant="secondary">
-          <span className="flex items-center justify-center gap-2">
+  {/* Sign Up Button */}
+  <Button type="submit" disabled={loading}>
+    {loading ? "Loading..." : "Sign Up"}
+  </Button>
 
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
-              className="w-5 h-5"
-            >
-              <path
-                fill="#FFC107"
-                d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 3l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"
-              />
-              <path
-                fill="#FF3D00"
-                d="M6.3 14.7l6.6 4.8C14.7 16 19 12 24 12c3 0 5.7 1.1 7.8 3l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"
-              />
-              <path
-                fill="#4CAF50"
-                d="M24 44c5.2 0 10-2 13.5-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.5 16.2 44 24 44z"
-              />
-              <path
-                fill="#1976D2"
-                d="M43.6 20.5H42V20H24v8h11.3c-1.1 3.1-3.3 5.5-6.2 7.1l6.2 5.2C39 36.7 44 31 44 24c0-1.3-.1-2.4-.4-3.5z"
-              />
-            </svg>
-            Continue with Google
-          </span>
-        </Button>
+  {/* Divider */}
+  <div className="flex items-center my-6">
+    <div className="flex-1 h-[1px] bg-gray-200"></div>
 
-        {/* Footer */}
-        <p className="text-center text-[11px] text-gray-400 mt-7">
-          Already have an account?
-          <Link to="/login" className="text-primary font-bold">
-          Sign In Here 
-          </Link>
-        </p>
-      </form>
+    <span className="px-3 text-[11px] text-gray-400">
+      or sign up with
+    </span>
+
+    <div className="flex-1 h-[1px] bg-gray-200"></div>
+  </div>
+
+  {/* Google Button */}
+  <Button type="button" variant="secondary">
+    <span className="flex items-center justify-center gap-2">
+      {/* SVG tetap seperti milikmu */}
+      Continue with Google
+    </span>
+  </Button>
+
+  {/* Footer */}
+  <p className="text-center text-[11px] text-gray-400 mt-7">
+    Already have an account?
+    <Link to="/login" className="text-primary font-bold">
+      {" "}Sign In Here
+    </Link>
+  </p>
+
+</form>
+      <AppSnackbar
+  open={snackbar.open}
+  message={snackbar.message}
+  severity={snackbar.severity}
+  onClose={() =>
+    setSnackbar({
+      ...snackbar,
+      open: false,
+    })
+  }
+/>
     </>
   );
 }

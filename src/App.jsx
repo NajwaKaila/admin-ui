@@ -1,21 +1,25 @@
 import "./App.css";
+import { useContext } from "react";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import { AuthContext } from "./context/authContext";
+
+// Import Halaman-Halaman
 import SignInPage from "./pages/signIn";
 import SignUpPage from "./pages/signUp";
 import ErrorPage from "./pages/error";
-import { Link } from "react-router-dom";
 import DashboardPage from "./pages/dashboard";
 import BalancePage from "./pages/balance";
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
-import { useContext } from "react";
-import { AuthContext } from "./context/authContext";
+import ExpensesPage from "./pages/expenses"; // <-- 1. Tambahkan import halaman expenses
 
 function App() {
   const { user } = useContext(AuthContext);
 
+  // Komponen pembatas: Hanya boleh diakses jika sudah login
   const RequireAuth = ({ children }) => {
     return user ? children : <Navigate to="/login" />;
   };
 
+  // Komponen pembatas: Hanya boleh diakses jika BELUM login (Guest)
   const NotRequireAuth = ({ children }) => {
     return user ? <Navigate to="/" /> : children;
   };
@@ -54,13 +58,17 @@ function App() {
         </RequireAuth>
       ),
     },
+    {
+      path: "/expenses",
+      element: (
+        <RequireAuth>
+          <ExpensesPage /> {/* <-- 2. Daftarkan route expenses di bawah proteksi RequireAuth */}
+        </RequireAuth>
+      ),
+    },
   ]);
 
-  return (
-    <>
-      <RouterProvider router={myRouter} />
-    </>
-  );
+  return <RouterProvider router={myRouter} />;
 }
 
 export default App;

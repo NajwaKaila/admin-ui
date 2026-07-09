@@ -1,7 +1,12 @@
 import React from 'react';
 
 function Button(props) {
-    const { children, type = "submit", variant = "primary" } = props;
+    const {
+  children,
+  type = "submit",
+  variant = "primary",
+  disabled = false,
+} = props;
 
     const baseClasses =
         "w-full h-[42px] rounded-md text-sm w-full cursor-pointer hover:scale-105";
@@ -16,9 +21,13 @@ function Button(props) {
     }`;
 
     return (
-        <button className={finalClasses} type={type}>
-            {children}
-        </button>
+        <button
+  className={finalClasses}
+  type={type}
+  disabled={disabled}
+>
+  {children}
+</button>
     );
 }
 

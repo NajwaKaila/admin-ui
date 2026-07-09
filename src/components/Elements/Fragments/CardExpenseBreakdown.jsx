@@ -2,7 +2,19 @@ import React from "react";
 import Card from "../Card";
 
 function CardExpenseBreakdown(props) {
-  const { data } = props;
+  const { data, loading } = props;
+  if (loading) {
+  return (
+    <Card
+      title="Expenses Breakdown"
+      desc={
+        <div className="text-center py-10">
+          Loading...
+        </div>
+      }
+    />
+  );
+}
 
   return (
     <>
@@ -10,7 +22,7 @@ function CardExpenseBreakdown(props) {
         title="Expenses Breakdown"
         desc={
           <div className="h-full md:grid md:grid-cols-3 gap-4">
-            {data.map((item) => (
+            {data?.map((item) => (
               <div
                 key={item.id}
                 className="flex items-center justify-between"
